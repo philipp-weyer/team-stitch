@@ -1,0 +1,93 @@
+.s3-uploader-container {
+    background-color: #fff;
+    /* Adjust background color */
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 20;
+    font-family: "MongoDB Value Serif";
+    color: black;
+}
+
+.s3-uploader-header {
+    display: none;
+}
+
+.s3-uploader-form * {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-direction: column;
+}
+
+[type="file"] {
+    /* Style the color of the message that says 'No file chosen' */
+    color: #878787;
+}
+
+[type="file"]::-webkit-file-upload-button {
+    border-radius: 4px;
+    background-color: #00ED64;
+    border: solid;
+    border-width: 1px;
+    -webkit-text-decoration: none;
+    text-decoration: none;
+    display: inline-block;
+    gap: 8px;
+    transition: border-radius .15s;
+    color: #001E2B;
+    stroke: #001E2B;
+    fill: #001E2B;
+    font-family: Euclid Circular A;
+    font-size: 16px;
+    font-weight: 500;
+    border-color: #00684A;
+    cursor: pointer;
+    -webkit-transition: border-radius .15s;
+    transition: border-radius .15s;
+
+    outline: none;
+    padding: 10px 25px;
+    text-transform: uppercase;
+    transition: all 1s ease;
+}
+
+[type="file"]::-webkit-file-upload-button:hover {
+    border-radius: 15px;
+}
+
+
+button {
+    cursor: pointer;
+    width: 200px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    padding-left: 32px;
+    padding-right: 32px;
+    font-family: Euclid Circular A;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 4px;
+    line-height: 16px;
+    border: solid;
+    border-width: 1px;
+    -webkit-text-decoration: none;
+    text-decoration: none;
+    display: inline-block;
+    gap: 8px;
+    -webkit-transition: border-radius .15s;
+    transition: border-radius .15s;
+    color: #001E2B;
+    stroke: #001E2B;
+    fill: #001E2B;
+    border-color: #00684A;
+    background-color: #00ED64;
+}
+
+button:hover {
+    border-radius: 15px;
+}
