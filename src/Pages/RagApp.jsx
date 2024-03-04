@@ -36,11 +36,11 @@ const SearchPage = () => {
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 4 }}>
         <Typography variant="h4" component="h4" gutterBottom>
-          Frage e.foresight
+          Ask me anything
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%'}}>
           <TextField
-            label="Ihre Frage"
+            label="Your question"
             variant="outlined"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -51,12 +51,12 @@ const SearchPage = () => {
             onClick={handleSearch}
             disabled={isLoading}  
           >
-            {isLoading ? <CircularProgress size={24} /> : "Frage stellen"}
+            {isLoading ? <CircularProgress size={24} /> : "Ask"}
           </Button>
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, alignItems: 'center', gap: 2, width: '100%', mt: 3 }}>
           <Typography variant="h5" component="h5" gutterBottom>
-            Unsere Antwort:
+            The answer:
           </Typography>
           <Paper sx={{ width: '97%', mt: 3, p: 3 }}>
             <MemoizedAIWriter response={response} />
