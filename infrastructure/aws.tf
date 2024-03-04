@@ -10,24 +10,10 @@ data "aws_iam_policy_document" "stitch_user_s3_policy_document" {
   }
 }
 
-data "aws_iam_policy_document" "stitch_user_bedrock_policy_document" {
-  statement {
-    effect = "Allow"
-    actions = ["bedrock:*"]
-    resources = ["*"]
-  }
-}
-
 resource "aws_iam_user_policy" "stitch_user_s3_policy" {
   name = "stitch_user_s3_policy"
   user = aws_iam_user.stitch_user.name
   policy = data.aws_iam_policy_document.stitch_user_s3_policy_document.json
-}
-
-resource "aws_iam_user_policy" "stitch_user_bedrock_policy" {
-  name = "stitch_user_bedrock_policy"
-  user = aws_iam_user.stitch_user.name
-  policy = data.aws_iam_policy_document.stitch_user_bedrock_policy_document.json
 }
 
 resource "aws_iam_access_key" "stitch_access_key" {
@@ -55,6 +41,89 @@ resource "aws_s3_bucket_cors_configuration" "allow_cors" {
     allowed_methods = ["PUT", "POST", "GET"]
     allowed_origins = ["*"]
   }
+}
+
+resource "aws_s3_bucket_notification" "bucket_notification" {
+  bucket = aws_s3_bucket.public_bucket.id
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.transferFunction.arn
+    events = ["s3:ObjectCreated:*"]
+  }
+}
+
+data "aws_iam_policy_document" "assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role" "iam_for_lambda" {
+  name = "iam_for_lambda"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
+
+resource "aws_lambda_permission" "allow_bucket" {
+  statement_id = "AllowExecutionFromS3Bucket"
+  action = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.transferFunction.arn
+  principal = "s3.amazonaws.com"
+  source_arn = aws_s3_bucket.public_bucket.arn
+}
+
+data "archive_file" "transferFunction" {
+  type = "zip"
+  source_file = "${path.module}/../lambda/transferFunction/main.py"
+  output_path = "transferFunction.zip"
+}
+
+resource "aws_lambda_function" "transferFunction" {
+  filename = "${path.module}/transferFunction.zip"
+  function_name = "transferFunction"
+  role = aws_iam_role.iam_for_lambda.arn
+  handler = "main.handler"
+  runtime = "python3.11"
+  source_code_hash = data.archive_file.transferFunction.output_base64sha256
+
+  depends_on = [data.archive_file.transferFunction]
+}
+
+resource "aws_cloudwatch_log_group" "transferFunctionLogs" {
+  name = "/aws/lambda/${aws_lambda_function.transferFunction.function_name}"
+  retention_in_days = 14
+}
+
+data "aws_iam_policy_document" "lambda_logging" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+
+    resources = ["arn:aws:logs:*:*:*"]
+  }
+}
+
+resource "aws_iam_policy" "lambda_logging" {
+  name        = "lambda_logging"
+  path        = "/"
+  description = "IAM policy for logging from a lambda"
+  policy      = data.aws_iam_policy_document.lambda_logging.json
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_logs" {
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = aws_iam_policy.lambda_logging.arn
 }
 
 # resource "aws_s3_bucket_ownership_controls" "public_bucket_access" {
