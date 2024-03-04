@@ -5,11 +5,21 @@ terraform {
       version = "~> 5.0"
     }
 
+    azurerm = {
+      source = "hashicorp/azurerm"
+      version = "=3.0.0"
+    }
+
     mongodbatlas = {
       source = "mongodb/mongodbatlas"
       version = "~> 1.12"
     }
   }
+}
+
+provider "azurerm" {
+  skip_provider_registration = true
+  features {}
 }
 
 # Configure the AWS Provider

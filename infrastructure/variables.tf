@@ -22,6 +22,14 @@ variable "availability_zone" {
   description = "The az that the resources will be launched"
 }
 
+variable "azure_base_name" {
+  description = "Base name that is used for all Azure resources"
+}
+
+variable "azure_region" {
+  description = "Region that the Azure services are going to be created in"
+}
+
 variable "atlas_public_key" {
   description = "Atlas Public Key"
 }

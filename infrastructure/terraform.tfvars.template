@@ -5,6 +5,9 @@ vpc_cidr = ""
 public_subnet_cidr = ""
 availability_zone = ""
 
+azure_base_name = ""
+azure_region = ""
+
 atlas_public_key = ""
 atlas_private_key = ""
 atlas_project_id = ""

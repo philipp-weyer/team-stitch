@@ -34,15 +34,6 @@ resource "aws_iam_access_key" "stitch_access_key" {
   user = aws_iam_user.stitch_user.name
 }
 
-output "key_id" {
-  value = aws_iam_access_key.stitch_access_key.id
-}
-
-output "secret_key" {
-  value = aws_iam_access_key.stitch_access_key.secret
-  sensitive = true
-}
-
 resource "aws_s3_bucket" "public_bucket" {
   bucket = var.s3_bucket_name
   acl = "public-read-write"
