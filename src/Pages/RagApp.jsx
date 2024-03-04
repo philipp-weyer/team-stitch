@@ -4,6 +4,7 @@ import { useRealmApp } from "../RealmApp";
 import MemoizedAIWriter from '../Components/AIWriterMemorized';
 import companyLogo from '../assets/eforesight_logo.png';
 import mongoDBLogo from '../assets/MongoDB_ForestGreen.png';
+import S3Uploader from '../Components/S3Uploader';
 
 const SearchPage = () => {
   const app = useRealmApp();
@@ -39,6 +40,7 @@ const SearchPage = () => {
           Ask me anything
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%'}}>
+          <S3Uploader></S3Uploader>
           <TextField
             label="Your question"
             variant="outlined"
