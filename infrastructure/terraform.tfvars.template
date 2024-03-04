@@ -1,0 +1,28 @@
+aws_region = ""
+aws_profile = ""
+s3_bucket_name = ""
+vpc_cidr = ""
+public_subnet_cidr = ""
+availability_zone = ""
+
+atlas_public_key = ""
+atlas_private_key = ""
+atlas_project_id = ""
+atlas_user_name = ""
+atlas_password = ""
+atlas_region = ""
+atlas_cluster_name = ""
+
+owner = ""
+expire = ""
+purpose = ""
+project = ""
+
+# key_name = ""
+# key_path = ""
+
+db_name = ""
+coll_name = ""
+embedding_path = ""
+embedding_dim = 1024
+embedding_sim = ""
