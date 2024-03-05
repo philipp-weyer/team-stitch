@@ -6,6 +6,7 @@
 ## Overview
 
 This application is designed to empower MongoDB solutions architects in demonstrating the capabilities of MongoDB Atlas Vector Search for enhancing Q&A sections on customer websites. By crawling customer websites, storing documents on AWS S3, and leveraging serverless architecture, this app showcases how MongoDB Atlas can seamlessly integrate its Vector Search capabilities on top of the customers data in order to improve search functionalities.
+![flow](https://github.com/philipp-weyer/team-stitch/assets/3890291/43a9ecb6-9a1a-4fcb-b402-2e91ce3a8e29)
 
 ## Features
 
