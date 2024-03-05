@@ -47,12 +47,27 @@ const faqQuestionClass = '.contains-headerlink';
 const faqAnswerClass = '.leafygreen-ui-kkpb6g';
 // insert here the faq site
 
-1. **run the script:**
+1. **run the scraper script:**
 
 ```node
 node ./scraper/scraper.js
 ```
 ![image](https://github.com/philipp-weyer/team-stitch/assets/3890291/48b87b5c-cf28-4b85-8da0-1a2d054b4b59)
+
+## Uploading the knowledge base manually
+1. **setting up WebApp:**
+navigate to the webapp project folder
+```bash
+cd /frontend
+```
+2. **running the WebApp:**
+
+```node
+npm run dev
+```
+3. **Upload any type of file:**
+Initially only JSON files are supported but the embedding model used, allows multi modal behaviour and images will be handled too.
+
 
 
 ## Setup Instructions
