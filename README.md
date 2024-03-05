@@ -52,6 +52,7 @@ const faqAnswerClass = '.leafygreen-ui-kkpb6g';
 ```node
 node ./scraper/scraper.js
 ```
+![image](https://github.com/philipp-weyer/team-stitch/assets/3890291/48b87b5c-cf28-4b85-8da0-1a2d054b4b59)
 
 
 ## Setup Instructions
