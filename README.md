@@ -37,6 +37,23 @@ Feel free to customize this README file according to your project's specific det
    - The Lambda function processes raw JSON documents obtained from the web crawler or inputted by users and writes them on MongoDB for further processing.
 
 
+## Using the scraper functionatlity
+1. **configuring the crawler:**
+open the scraper/scraper.js file with a text editor and modify the top 3 parameters as so:
+
+// insert here the class of the question
+const faqQuestionClass = '.contains-headerlink';
+// insert here the class of the answer
+const faqAnswerClass = '.leafygreen-ui-kkpb6g';
+// insert here the faq site
+
+1. **run the script:**
+
+```node
+node ./scraper/scraper.js
+```
+
+
 ## Setup Instructions
 
 1. **Terraform and Stuff:**
