@@ -31,6 +31,7 @@ def handler(event, context):
 
         doc = {
             'title': key,
+            'url': 'https://%s.s3.amazonaws.com/%s' % (bucket, key),
             'meta': response['Metadata'],
             'body': body.decode('utf-8'),
             'lastModified': response['LastModified'],
