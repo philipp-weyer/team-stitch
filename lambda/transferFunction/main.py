@@ -1,5 +1,5 @@
 import boto3
-from bson.json_util import dumps
+from bson.json_util import dumps, loads
 import hashlib
 import os
 import pymongo
@@ -27,18 +27,22 @@ def handler(event, context):
         response = s3.get_object(Bucket=bucket, Key=key)
 
         body = response['Body'].read()
-        hashing.update(body)
 
-        doc = {
-            'title': key,
-            'url': 'https://%s.s3.amazonaws.com/%s' % (bucket, key),
-            'meta': response['Metadata'],
-            'body': body.decode('utf-8'),
-            'lastModified': response['LastModified'],
-            'hash': hashing.hexdigest()
-        }
+        if key.endswith('.json'):
+            docs = loads(body)
+            coll.insert_many(docs)
+        else:
+            hashing.update(body)
+            doc = {
+                'title': key,
+                'url': 'https://%s.s3.amazonaws.com/%s' % (bucket, key),
+                'meta': response['Metadata'],
+                'body': body.decode('utf-8'),
+                'lastModified': response['LastModified'],
+                'hash': hashing.hexdigest()
+            }
 
-        res = coll.replace_one({'title': key}, doc, upsert=True)
+            res = coll.replace_one({'title': key}, doc, upsert=True)
 
         print("Inserted " + key)
         return "Success"
