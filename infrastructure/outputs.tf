@@ -1,14 +1,28 @@
-output "azure_endpoint" {
-  value = azurerm_cognitive_account.cognitive_account.endpoint
+output "azure_ca_endpoint" {
+  value = azurerm_cognitive_account.ca_account.endpoint
 }
 
-output "azure_primary_key" {
-  value = azurerm_cognitive_account.cognitive_account.primary_access_key
+output "azure_ca_primary_key" {
+  value = azurerm_cognitive_account.ca_account.primary_access_key
   sensitive = true
 }
 
-output "azure_secondary_key" {
-  value = azurerm_cognitive_account.cognitive_account.secondary_access_key
+output "azure_ca_secondary_key" {
+  value = azurerm_cognitive_account.ca_account.secondary_access_key
+  sensitive = true
+}
+
+output "azure_oai_endpoint" {
+  value = azurerm_cognitive_account.oai_account.endpoint
+}
+
+output "azure_oai_primary_key" {
+  value = azurerm_cognitive_account.oai_account.primary_access_key
+  sensitive = true
+}
+
+output "azure_oai_secondary_key" {
+  value = azurerm_cognitive_account.oai_account.secondary_access_key
   sensitive = true
 }
 
