@@ -17,5 +17,13 @@
         "name": "getResponse",
         "private": false,
         "disable_arg_logs": true
+    },
+    {
+        "name": "createTextEmbedding",
+        "private": false
+    },
+    {
+        "name": "getTextEmbedding",
+        "private": false
     }
 ]
