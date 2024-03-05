@@ -17,6 +17,12 @@
     display: none;
 }
 
+.s3-uploader-form {
+    display: flex;
+    align-items: center;
+    padding: 30px;
+}
+
 .s3-uploader-form * {
     display: flex;
     align-items: center;
