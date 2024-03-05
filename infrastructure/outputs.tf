@@ -20,3 +20,7 @@ output "secret_key" {
   value = aws_iam_access_key.stitch_access_key.secret
   sensitive = true
 }
+
+output "lambda_ip" {
+  value = aws_eip.nat_eip.public_ip
+}

@@ -52,7 +52,7 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
   }
 }
 
-data "aws_iam_policy_document" "assume_role" {
+data "aws_iam_policy_document" "lambda_role" {
   statement {
     effect = "Allow"
 
@@ -67,7 +67,26 @@ data "aws_iam_policy_document" "assume_role" {
 
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
-  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.lambda_role.json
+
+  inline_policy {
+    name = "ec2_policy"
+
+    policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [{
+        Action = [
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:CreateNetworkInterface",
+          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeInstances",
+          "ec2:AttachNetworkInterface"
+        ]
+        Effect = "Allow"
+        Resource = "*"
+      }]
+    })
+  }
 }
 
 resource "aws_lambda_permission" "allow_bucket" {
@@ -80,7 +99,7 @@ resource "aws_lambda_permission" "allow_bucket" {
 
 data "archive_file" "transferFunction" {
   type = "zip"
-  source_file = "${path.module}/../lambda/transferFunction/main.py"
+  source_dir = "${path.module}/../lambda/transferFunction/"
   output_path = "transferFunction.zip"
 }
 
@@ -89,10 +108,25 @@ resource "aws_lambda_function" "transferFunction" {
   function_name = "transferFunction"
   role = aws_iam_role.iam_for_lambda.arn
   handler = "main.handler"
-  runtime = "python3.11"
+  runtime = "python3.12"
   source_code_hash = data.archive_file.transferFunction.output_base64sha256
 
   depends_on = [data.archive_file.transferFunction]
+
+  vpc_config {
+    subnet_ids = [aws_subnet.private_subnet.id]
+    security_group_ids = [aws_security_group.default.id]
+  }
+
+  environment {
+    variables = {
+      MONGO_URL = mongodbatlas_cluster.cluster.connection_strings.0.standard_srv
+      MONGO_USER = var.atlas_user_name
+      MONGO_PASSWORD = var.atlas_password
+      MONGO_DB = var.db_name
+      MONGO_COLL = var.coll_name
+    }
+  }
 }
 
 resource "aws_cloudwatch_log_group" "transferFunctionLogs" {
@@ -125,182 +159,3 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
   role       = aws_iam_role.iam_for_lambda.name
   policy_arn = aws_iam_policy.lambda_logging.arn
 }
-
-# resource "aws_s3_bucket_ownership_controls" "public_bucket_access" {
-  # bucket = aws_s3_bucket.public_bucket.id
-#
-  # rule {
-    # object_ownership = "BucketOwnerPreferred"
-  # }
-# }
-#
-# resource "aws_s3_bucket_public_access_block" "public_access_block" {
-  # bucket = aws_s3_bucket.public_bucket.id
-#
-  # block_public_acls = false
-  # block_public_policy = false
-  # ignore_public_acls = false
-  # restrict_public_buckets = false
-# }
-
-# [>==== The VPC ======<]
-# resource "aws_vpc" "vpc" {
-  # cidr_block           = "${var.vpc_cidr}"
-  # enable_dns_hostnames = true
-  # enable_dns_support   = true
-#
-  # tags = {
-    # owner = "${var.owner}"
-    # expire-on = "${var.expire}"
-    # purpose = "${var.purpose}"
-    # project = "${var.project}"
-    # Name = "${var.project}"
-  # }
-# }
-#
-# [>==== Subnets ======<]
-# [> Internet gateway for the public subnet <]
-# resource "aws_internet_gateway" "ig" {
-  # vpc_id = "${aws_vpc.vpc.id}"
-#
-  # tags = {
-    # owner = "${var.owner}"
-    # expire-on = "${var.expire}"
-    # purpose = "${var.purpose}"
-    # project = "${var.project}"
-  # }
-# }
-#
-# [> Public subnet <]
-# resource "aws_subnet" "public_subnet" {
-  # vpc_id                  = aws_vpc.vpc.id
-  # cidr_block              = var.public_subnet_cidr
-  # availability_zone       = var.availability_zone
-  # map_public_ip_on_launch = true
-#
-  # tags = {
-    # owner = "${var.owner}"
-    # expire-on = "${var.expire}"
-    # purpose = "${var.purpose}"
-    # project = "${var.project}"
-    # Name = "${var.project}-sn-pblc"
-  # }
-# }
-#
-# [> Routing table for public subnet <]
-# resource "aws_default_route_table" "public" {
-  # default_route_table_id = aws_vpc.vpc.default_route_table_id
-#
-  # tags = {
-    # owner = "${var.owner}"
-    # expire-on = "${var.expire}"
-    # purpose = "${var.purpose}"
-    # project = "${var.project}"
-    # Name = "${var.project}-rtb-pblc"
-  # }
-# }
-#
-# [> Routing table for public subnet <]
-# resource "aws_route_table" "private" {
-  # vpc_id = aws_vpc.vpc.id
-#
-  # tags = {
-    # owner = "${var.owner}"
-    # expire-on = "${var.expire}"
-    # purpose = "${var.purpose}"
-    # project = "${var.project}"
-    # Name = "${var.project}-rtb-prvt"
-  # }
-# }
-#
-# resource "aws_route" "public_internet_gateway" {
-  # route_table_id         = "${aws_default_route_table.public.id}"
-  # destination_cidr_block = "0.0.0.0/0"
-  # gateway_id             = "${aws_internet_gateway.ig.id}"
-# }
-#
-# [> Route table associations <]
-# resource "aws_main_route_table_association" "public" {
-  # vpc_id = "${aws_vpc.vpc.id}"
-  # route_table_id = "${aws_default_route_table.public.id}"
-# }
-#
-# [>==== VPC's Default Security Group ======<]
-# resource "aws_security_group" "default" {
-  # name        = "${var.project}-default-sg"
-  # description = "Default security group to allow inbound/outbound from the VPC"
-  # vpc_id      = "${aws_vpc.vpc.id}"
-  # depends_on  = [aws_vpc.vpc]
-#
-  # ingress = [
-    # {
-      # description      = "All Ports/Protocols"
-      # from_port        = 0
-      # to_port          = 0
-      # protocol         = "-1"
-      # cidr_blocks      = ["0.0.0.0/0"]
-      # ipv6_cidr_blocks = ["::/0"]
-      # prefix_list_ids  = null
-      # security_groups  = null
-      # self             = null
-    # }
-  # ]
-#
-  # egress = [
-    # {
-      # description      = "All Ports/Protocols"
-      # from_port        = 0
-      # to_port          = 0
-      # protocol         = "-1"
-      # cidr_blocks      = ["0.0.0.0/0"]
-      # ipv6_cidr_blocks = ["::/0"]
-      # prefix_list_ids  = null
-      # security_groups  = null
-      # self             = null
-    # }
-  # ]
-#
-  # tags = {
-    # owner = "${var.owner}"
-    # expire-on = "${var.expire}"
-    # purpose = "${var.purpose}"
-    # project = "${var.project}"
-  # }
-# }
-# data "aws_ami" "amazon_linux" {
-  # most_recent = true
-#
-  # filter {
-    # name = "name"
-    # values = ["amazon*"]
-  # }
-#
-  # filter {
-    # name = "architecture"
-    # values = ["x86_64"]
-  # }
-# }
-#
-# resource "aws_key_pair" "key_pair" {
-  # key_name = var.key_name
-  # public_key = file(var.key_path)
-# }
-#
-# resource "aws_instance" "public_instance" {
-  # ami                    = data.aws_ami.amazon_linux.image_id
-  # instance_type          = "t3.micro"
-  # vpc_security_group_ids = [aws_security_group.default.id]
-  # key_name               = aws_key_pair.key_pair.key_name
-#
-  # subnet_id      = "${element(aws_subnet.public_subnet.*.id, 0)}"
-#
-  # user_data = file("./deploy.sh")
-#
-  # tags = {
-    # owner = "${var.owner}"
-    # expire-on = "${var.expire}"
-    # purpose = "${var.purpose}"
-    # project = "${var.project}"
-    # Name = "${var.project}-instance"
-  # }
-# }

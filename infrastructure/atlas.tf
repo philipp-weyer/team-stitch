@@ -1,3 +1,8 @@
+resource "mongodbatlas_project_ip_access_list" "access_eu" {
+  project_id = var.atlas_project_id
+  cidr_block = "${aws_eip.nat_eip.public_ip}/32"
+}
+
 resource "mongodbatlas_database_user" "test" {
   username           = var.atlas_user_name
   password           = var.atlas_password
