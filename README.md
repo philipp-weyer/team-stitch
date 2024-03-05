@@ -1,7 +1,7 @@
 # team-stitch
 
 
-# MongoDB Atlas Vector Search Demo App
+# StitchAI Search Enhancer
 
 ## Overview
 
