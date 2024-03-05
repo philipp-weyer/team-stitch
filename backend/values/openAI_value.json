@@ -1,5 +1,0 @@
-{
-    "name": "openAI_value",
-    "value": "OpenAI_secret",
-    "from_secret": true
-}
