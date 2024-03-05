@@ -28,7 +28,7 @@ Feel free to customize this README file according to your project's specific det
    - User can use the sample webpage to upload knowledge base json documents OR sopecify a website URL for crawling content in order to extract relevant information
 
 2. **AWS S3 Storage:**
-   - Extracted documents are stored on AWS S3 and processed via a Lambda function that stores them into Atlas 
+   - Extracted documents are stored on AWS S3 and processed via a Lambda function that stores them into Atlas
 
 3. **App Services Function 1:**
    - Once documents are written into the Atlas Cluster in the 'content' collection, an appservices function gets invoked via an Atlas Trigger. This function calls the OpenAI embedding model (Ai Services Computyer Vision which is multi-modal for future enhancements) to retrieve vector embeddings and updates the Documents within the collection with all document related vector information.
@@ -56,10 +56,35 @@ node ./scraper/scraper.js
 
 ## Setup Instructions
 
-1. **Terraform and Stuff:**
+Terraform is used in the background to do the entire infrastructure deployment
+of S3 buckets, Lambda function integration, MongoDB Atlas cluster deployment,
+vector search index creation and deployment of LLM and Embedding models. The
+infrastructure is currently distributed on MongoDB Atlas, Amazon Web Services
+and Azure, so that API keys for all of those services are needed.
 
+The file infrastructure/terraform.tfvars.template should be copied to
+infrastructure/terraform.tfvars and modified with the necessary API keys to
+deploy all of the infrastructure. On the MongoDB Atlas side, a project has to
+be created manually first, in which everything is going to be deployed.
+
+After this, the ./install.sh script can be executed to finish the entire
+backend deployment. It executes the Terraform scripts, takes all of the
+important values and secrets of the resulting infrastructure and stores them
+locally. These values can then be taken to modify the
+backend/stitch-backend/.mdb/meta.json file in the App Services folder, so that
+a new App Services application can be created, which is accessing all of the
+newly created services. At this stage, the appservices CLI tool will be asking
+for a set of API keys that need to be given in order to create a new
+application.
+
+Once this is done, in a final step, the endpoint values in the frontend are
+being modified and a local development server is started. You can now access
+the application from your local browser, send queries to the data that you
+ingest and get relevant answers back from the connected LLM.
 
 ## Dependencies
-1. **Dep 1:**
-2. **Dep 2:**
-3. **Dep 3:**
+- python3.x
+- pip3.x
+- nodejs
+- terraform
+- appservices CLI
