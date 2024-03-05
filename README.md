@@ -6,6 +6,7 @@
 ## Overview
 
 This application is designed to empower MongoDB solutions architects in demonstrating the capabilities of MongoDB Atlas Vector Search for enhancing Q&A sections on customer websites. By crawling customer websites, storing documents on AWS S3, and leveraging serverless architecture, this app showcases how MongoDB Atlas can seamlessly integrate its Vector Search capabilities on top of the customers data in order to improve search functionalities.
+
 ![flow](https://github.com/philipp-weyer/team-stitch/assets/3890291/43a9ecb6-9a1a-4fcb-b402-2e91ce3a8e29)
 
 ## Features
@@ -19,3 +20,29 @@ This application is designed to empower MongoDB solutions architects in demonstr
 - **Ways of inputs:** Raw JSON documents, either extracted from the web crawler or manually inputted by users, are written into a MongoDB Atlas Cluster. Add it
 
 Feel free to customize this README file according to your project's specific details and requirements.
+
+
+## How It Works
+
+1. **Uploading or Web Crawling:**
+   - User can use the sample webpage to upload knowledge base json documents OR sopecify a website URL for crawling content in order to extract relevant information
+
+2. **AWS S3 Storage:**
+   - Extracted documents are stored on AWS S3 and processed via a Lambda function that stores them into Atlas 
+
+3. **App Services Function 1:**
+   - Once documents are written into the Atlas Cluster in the 'content' collection, an appservices function gets invoked via an Atlas Trigger. This function calls the OpenAI embedding model (Ai Services Computyer Vision which is multi-modal for future enhancements) to retrieve vector embeddings and updates the Documents within the collection with all document related vector information.
+
+4. **Lambda transferFunction:**
+   - The Lambda function processes raw JSON documents obtained from the web crawler or inputted by users and writes them on MongoDB for further processing.
+
+
+## Setup Instructions
+
+1. **Terraform and Stuff:**
+
+
+## Dependencies
+1. **Dep 1:**
+2. **Dep 2:**
+3. **Dep 3:**
