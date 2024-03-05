@@ -12,9 +12,9 @@ const RequireLoggedInUser = ({ children }) => {
 const App = () => {
   return (
     <RealmAppProvider appId={APP_ID}>
-      <RequireLoggedInUser>
+      {/* <RequireLoggedInUser> */}
         <RagApp />
-      </RequireLoggedInUser>
+      {/* </RequireLoggedInUser> */}
     </RealmAppProvider>
     
   );

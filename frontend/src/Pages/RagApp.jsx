@@ -4,6 +4,7 @@ import { useRealmApp } from "../RealmApp";
 import MemoizedAIWriter from '../Components/AIWriterMemorized';
 import mongoDBLogo from '../assets/MongoDB_ForestGreen.png';
 import S3Uploader from '../Components/S3Uploader';
+import axios from 'axios';
 
 
 const SearchPage = () => {
@@ -15,6 +16,18 @@ const SearchPage = () => {
   const handleSearch = async () => {
     setIsLoading(true);
     setResponse('');
+    const body = {
+      user: 'user1',
+      query,
+      timestamp: new Date()
+    };
+
+    const headers =  {
+      'Content-Type': ['application/json']
+    }
+
+      let response = await axios.post("https://eu-central-1.aws.data.mongodb-api.com/app/hackathonbedrockintegration-enavg/endpoint/storeMessages", body, {headers});
+
     const searchResult = await app.callFunction("askQuestion", query);
     setResponse(searchResult.choices[0].message.content); 
     setIsLoading(false);

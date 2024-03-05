@@ -48,6 +48,7 @@ const S3Uploader = () => {
       <div className="s3-uploader-form">
         <input
           type="file"
+          multiple="multiple"
           onChange={handleFileChange}
           className="s3-uploader-file-input"
         />
